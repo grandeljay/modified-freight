@@ -1,0 +1,127 @@
+/**
+ * Freight
+ *
+ * @author  Jay Trees <freight@grandels.email>
+ * @link    https://github.com/grandeljay/modified-freight
+ * @package GrandelJayFreight
+ */
+
+/**
+ * Details
+ */
+details {
+    --border: 1px solid #a3a3a3;
+
+    transition:
+        0.2s ease border-color,
+        0.2s ease background-color;
+
+    position: relative;
+
+    margin-top: 0.6em;
+
+    border: var(--border);
+}
+details[open] {
+    background-color: transparent;
+}
+
+/** Summary */
+details > summary {
+    transition: 0.2s ease color;
+
+    display: flex;
+    gap: 0.4em;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    padding: 10px;
+
+    list-style: none;
+    font-size: 1em;
+    font-weight: bolder;
+
+    cursor: pointer;
+    user-select: none;
+    background-color: #dbdbdb;
+}
+details > summary::marker {
+    display: none;
+}
+details > summary::after {
+    transition: 0.2s ease transform;
+
+    width: 18px;
+    height: 18px;
+    content: '';
+
+    text-align: center;
+    background-image: url('../../images/arrow_right.gif');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+details[open] > summary {
+    border-bottom: var(--border);
+
+    color: #363636;
+    background-color: #e5e3e3;
+}
+details[open] > summary::after {
+    transform: rotate(90deg);
+}
+
+/** Heading */
+details > summary > :is(h1, h2, h3, h4, h5, h6) {
+    margin: 0;
+
+    line-height: inherit;
+    font-size: inherit;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+details[open] > summary > :is(h1, h2, h3, h4, h5, h6) {
+    white-space: normal;
+}
+details > summary > h1 {
+    font-size: 1.12em;
+}
+details > summary > h2 {
+    font-size: 1.10em;
+}
+details > summary > h3 {
+    font-size: 1.08em;
+}
+details > summary > h4 {
+    font-size: 1.06em;
+}
+details > summary > h5 {
+    font-size: 1.04em;
+}
+details > summary > h6 {
+    font-size: 1.02em;
+}
+
+/** Content */
+details > div {
+    padding: 10px;
+}
+
+details > div > :is(b, span.cfg_select_option) {
+    display: block;
+    width: max-content;
+}
+
+details > div > :is(br, b:empty),
+details > div > details + :is(br, b:empty) {
+    display: none;
+}
+details:not(:last-of-type) + :is(br, br + br) {
+    display: initial;
+}
+
+details.shipping-national-start > div > details:first-of-type {
+    margin-top: 20px;
+}
