@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Freight
+ * German translations
  *
  * @author  Jay Trees <freight@grandels.email>
  * @link    https://github.com/grandeljay/modified-freight
