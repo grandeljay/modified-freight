@@ -18,7 +18,7 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 class grandeljayfreight extends StdModule
 {
     public const NAME    = 'MODULE_SHIPPING_GRANDELJAYFREIGHT';
-    public const VERSION = '0.1.0';
+    public const VERSION = '0.1.1';
 
     private array $countries;
     public array $quotes;
