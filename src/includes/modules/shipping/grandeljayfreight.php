@@ -918,10 +918,13 @@ class grandeljayfreight extends StdModule
 
     public function quote()
     {
-        $quote = new Quote(self::NAME);
+        $quote  = new Quote(self::NAME);
+        $quotes = $quote->getQuote();
 
-        $this->quotes = $quote->getQuote();
+        if (isset($quotes['methods']) && count($quotes['methods']) > 0) {
+            $this->quotes = $quotes;
+        }
 
-        return $this->quotes;
+        return $quotes;
     }
 }
