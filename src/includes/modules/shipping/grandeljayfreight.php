@@ -17,11 +17,18 @@ use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 
 class grandeljayfreight extends StdModule
 {
+    private array $countries;
+
     public const NAME    = 'MODULE_SHIPPING_GRANDELJAYFREIGHT';
     public const VERSION = '0.1.1';
 
-    private array $countries;
-    public array $quotes;
+    /**
+     * Used by modified to determine the cheapest shipping method. Should
+     * contain the return value of the `quote` method.
+     *
+     * @var array
+     */
+    public array $quotes = array();
 
     public static function setGroup(string $value, string $option): string
     {
