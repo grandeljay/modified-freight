@@ -19,7 +19,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Grandeljay\\": "/vendor-no-composer/Grandeljay"
+            "Grandeljay\\Freight\\": "src-mmlc"
         }
+    },
+    "php": {
+        "version": "^8.0.0"
+    },
+    "mmlc": {
+        "version": "^1.20.0"
     }
 }
