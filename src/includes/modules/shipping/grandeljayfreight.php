@@ -51,6 +51,8 @@ class grandeljayfreight extends StdModule
 
         $this->checkForUpdate(true);
 
+        $this->addKey('SORT_ORDER');
+
         $this->initialiseWeight();
         $this->initialiseCountries();
         $this->initialiseSurcharges();
@@ -179,6 +181,8 @@ class grandeljayfreight extends StdModule
          */
         $this->addConfiguration('ALLOWED', '', 6, 1);
         /** */
+
+        $this->addConfiguration('SORT_ORDER', 3, 6, 1);
 
         $this->installWeight();
         $this->installCountries();
@@ -883,6 +887,8 @@ class grandeljayfreight extends StdModule
          */
         $this->removeConfiguration('ALLOWED');
         /** */
+
+        $this->removeConfiguration('SORT_ORDER');
 
         $this->removeWeight();
         $this->removeCountries();

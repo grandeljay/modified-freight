@@ -27,6 +27,8 @@ $translations_general = array(
     'STATUS_TITLE'                    => 'Activate module?',
     'STATUS_DESC'                     => 'Enables shipping via freight.',
     'TEXT_TITLE'                      => 'Freight',
+    'SORT_ORDER_TITLE'                => 'Sort order',
+    'SORT_ORDER_DESC'                 => 'Determines the sorting in the Admin and Checkout. Lowest numbers are displayed first.',
 
     /** Interface */
     'POSTAL_FROM_TITLE'               => 'From',

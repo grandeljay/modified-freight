@@ -27,6 +27,8 @@ $translations_general = array(
     'STATUS_TITLE'                    => '¿Activar módulo?',
     'STATUS_DESC'                     => 'Permite el envío a través de una agencia de transportes.',
     'TEXT_TITLE'                      => 'Transporte de mercancías',
+    'SORT_ORDER_TITLE'                => 'Orden de clasificación',
+    'SORT_ORDER_DESC'                 => 'Determina la clasificación en Admin y Checkout. Los números más bajos se muestran primero.',
 
     /** Interface */
     'POSTAL_FROM_TITLE'               => 'En',

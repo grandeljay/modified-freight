@@ -27,6 +27,8 @@ $translations_general = array(
     'STATUS_TITLE'                    => 'Attivare il modulo?',
     'STATUS_DESC'                     => 'Consente la spedizione tramite spedizioniere.',
     'TEXT_TITLE'                      => 'Spedizione merci',
+    'SORT_ORDER_TITLE'                => 'Ordinamento',
+    'SORT_ORDER_DESC'                 => 'Determina l\'ordinamento nell\'Admin e nel Checkout. I numeri più bassi vengono visualizzati per primi.',
 
     /** Interface */
     'POSTAL_FROM_TITLE'               => 'Da',

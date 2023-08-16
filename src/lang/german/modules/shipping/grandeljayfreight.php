@@ -27,6 +27,8 @@ $translations_general = array(
     'STATUS_TITLE'                    => 'Modul aktivieren?',
     'STATUS_DESC'                     => 'Ermöglicht den Versand via Spedition.',
     'TEXT_TITLE'                      => 'Spedition',
+    'SORT_ORDER_TITLE'                => 'Sortierreihenfolge',
+    'SORT_ORDER_DESC'                 => 'Bestimmt die Sortierung im Admin und Checkout. Niedrigste Zahlen werden zuerst angezeigt.',
 
     /** Interface */
     'POSTAL_FROM_TITLE'               => 'Ab',

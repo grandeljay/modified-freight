@@ -27,6 +27,8 @@ $translations_general = array(
     'STATUS_TITLE'                    => 'Activer le module ?',
     'STATUS_DESC'                     => 'Permet l\'expédition via un transporteur.',
     'TEXT_TITLE'                      => 'Expédition',
+    'SORT_ORDER_TITLE'                => 'Ordre de tri',
+    'SORT_ORDER_DESC'                 => 'Détermine le tri dans Admin et Checkout. Les chiffres les plus bas sont affichés en premier.',
 
     /** Interface */
     'POSTAL_FROM_TITLE'               => 'À partir de',
