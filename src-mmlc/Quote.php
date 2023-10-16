@@ -174,7 +174,6 @@ class Quote
          * Add surcharges
          */
         $surcharges_configuration = json_decode(constant(\grandeljayfreight::NAME . '_SURCHARGES_SURCHARGES'), true);
-        $surcharges_before        = $shipping_method_freight['cost'];
 
         foreach ($surcharges_configuration as $surcharge) {
             switch ($surcharge['surcharge-type']) {
@@ -183,7 +182,7 @@ class Quote
                     break;
 
                 case 'surcharge-percent':
-                    $surcharge_amount = $surcharge['surcharge-amount'] / 100 * $surcharges_before;
+                    $surcharge_amount = $surcharge['surcharge-amount'] / 100 * $order->info['total'];
                     break;
             }
 
