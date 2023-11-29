@@ -272,7 +272,7 @@ class Quote
 
     public function getQuote(): ?array
     {
-        if (empty($this->methods)) {
+        if (empty($this->methods) || $this->preceedsMinimumWeight()) {
             return null;
         }
 
@@ -286,5 +286,19 @@ class Quote
         );
 
         return $quote;
+    }
+
+    public function preceedsMinimumWeight(): bool
+    {
+        global $order, $total_weight;
+
+        if (null === $order) {
+            return true;
+        }
+
+        $shipping_weight_min     = $this->getConfig('WEIGHT_MINIMUM');
+        $preceeds_minimum_weight = $total_weight < $shipping_weight_min;
+
+        return $preceeds_minimum_weight;
     }
 }

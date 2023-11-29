@@ -70,6 +70,8 @@ $translations_groups = array(
 
     'WEIGHT_PER_PALLET_TITLE'               => 'Poids maximal par palette',
     'WEIGHT_PER_PALLET_DESC'                => 'Quel est le poids maximal d\'une palette ?',
+    'WEIGHT_MINIMUM_TITLE'                  => 'Poids minimal',
+    'WEIGHT_MINIMUM_DESC'                   => 'le poids d\'expédition à partir duquel le mode d\'expédition est affiché.',
 
     'WEIGHT_END_TITLE'                      => '',
     'WEIGHT_END_DESC'                       => '',

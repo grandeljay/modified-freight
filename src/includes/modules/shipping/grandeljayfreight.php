@@ -65,6 +65,7 @@ class grandeljayfreight extends StdModule
         $this->addKey('WEIGHT_START');
 
         $this->addKey('WEIGHT_PER_PALLET');
+        $this->addKey('WEIGHT_MINIMUM');
 
         $this->addKey('WEIGHT_END');
     }
@@ -194,6 +195,7 @@ class grandeljayfreight extends StdModule
         $this->addConfiguration('WEIGHT_START', '<h2>' . $this->getConfig('WEIGHT_START_TITLE') . '</h2>', 6, 1, self::class . '::setGroup(');
 
         $this->addConfiguration('WEIGHT_PER_PALLET', 500, 6, 1);
+        $this->addConfiguration('WEIGHT_MINIMUM', 30, 6, 1);
 
         $this->addConfiguration('WEIGHT_END', '', 6, 1, self::class . '::setGroup(');
     }
@@ -900,6 +902,7 @@ class grandeljayfreight extends StdModule
         $this->removeConfiguration('WEIGHT_START');
 
         $this->removeConfiguration('WEIGHT_PER_PALLET');
+        $this->removeConfiguration('WEIGHT_MINIMUM');
 
         $this->removeConfiguration('WEIGHT_END');
     }

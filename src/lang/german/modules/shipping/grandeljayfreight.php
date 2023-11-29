@@ -70,6 +70,8 @@ $translations_groups = array(
 
     'WEIGHT_PER_PALLET_TITLE'               => 'Maximalgewicht pro Palette',
     'WEIGHT_PER_PALLET_DESC'                => 'Wie viel darf eine Palette maximal wiegen?',
+    'WEIGHT_MINIMUM_TITLE'                  => 'Minimalgewicht',
+    'WEIGHT_MINIMUM_DESC'                   => 'Ab welchem Versandgewicht die Versandart angezeigt wird.',
 
     'WEIGHT_END_TITLE'                      => '',
     'WEIGHT_END_DESC'                       => '',
