@@ -120,6 +120,21 @@ class grandeljayfreight extends StdModule
 
     private function appendHTML(): void
     {
+        /** Only when module settings are open */
+        $grandeljayfreight_admin_screen = array(
+            'set'    => 'shipping',
+            'module' => grandeljayfreight::class,
+            'action' => 'edit',
+        );
+
+        parse_str($_SERVER['QUERY_STRING'] ?? '', $query_string);
+
+        foreach ($grandeljayfreight_admin_screen as $key => $value) {
+            if (!isset($query_string[$key]) || $query_string[$key] !== $value) {
+                return;
+            }
+        }
+
         ?>
         <template id="grandeljayfreight_bulk">
             <dialog style="width: 512px;">
