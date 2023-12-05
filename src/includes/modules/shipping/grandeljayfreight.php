@@ -33,6 +33,13 @@ class grandeljayfreight extends StdModule
      */
     public array $quotes = array();
 
+    /**
+     * Used to calculate the tax.
+     *
+     * @var int
+     */
+    public int $tax_class = 1;
+
     public static function setGroup(string $value, string $option): string
     {
         return Field::initialiseGroup($value, $option);
