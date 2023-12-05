@@ -15,6 +15,9 @@ use Grandeljay\Freight\{Quote, API};
 use Grandeljay\Freight\Configuration\Field;
 use RobinTheHood\ModifiedStdModule\Classes\StdModule;
 
+/**
+ * @link https://docs.module-loader.de/module-shipping/
+ */
 class grandeljayfreight extends StdModule
 {
     private array $countries;
