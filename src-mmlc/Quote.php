@@ -296,7 +296,7 @@ class Quote
             return true;
         }
 
-        $shipping_weight_min     = $this->getConfig('WEIGHT_MINIMUM');
+        $shipping_weight_min     = constant(\grandeljayfreight::NAME . '_WEIGHT_MINIMUM');
         $preceeds_minimum_weight = $total_weight < $shipping_weight_min;
 
         return $preceeds_minimum_weight;
