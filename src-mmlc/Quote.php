@@ -12,14 +12,24 @@ namespace Grandeljay\Freight;
 
 class Quote
 {
-    private float $total_weight = 0;
-    private array $pallets      = [];
-    private array $methods      = [];
+    private array $pallets = [];
+    private array $methods = [];
 
     public function __construct(string $module)
     {
         $this->pallets = $this->getPallets();
         $this->methods = $this->getShippingMethods();
+    }
+
+    private function getShippingWeight(): float
+    {
+        $shipping_weight = 0;
+
+        foreach ($this->pallets as $pallet) {
+            $shipping_weight += $pallet->getWeight();
+        }
+
+        return $shipping_weight;
     }
 
     private function getPallets(): array
@@ -32,8 +42,7 @@ class Quote
 
         foreach ($products as $product) {
             for ($i = 1; $i <= $product['quantity']; $i++) {
-                $product_weight      = (float) $product['weight'];
-                $this->total_weight += $product_weight;
+                $product_weight = (float) $product['weight'];
 
                 /** Find a pallet empty enough to fit product */
                 foreach ($pallets as &$pallet) {
@@ -91,6 +100,8 @@ class Quote
             ],
         ];
 
+        $shipping_weight = $this->getShippingWeight();
+
         $countries_query  = xtc_db_query(
             sprintf(
                 'SELECT *
@@ -138,12 +149,12 @@ class Quote
         }
 
         foreach ($postal_rates as $rate) {
-            if ($rate['weight-max'] >= $this->total_weight) {
+            if ($rate['weight-max'] >= $shipping_weight) {
                 // Use this rate
                 $shipping_method_freight['cost']                   += $rate['weight-costs'];
                 $shipping_method_freight['debug']['calculations'][] = sprintf(
                     'Total weight is %s kg which costs %s €. (%s € total).',
-                    round($this->total_weight, 2),
+                    round($shipping_weight, 2),
                     round($rate['weight-costs'], 2),
                     round($shipping_method_freight['cost'], 2)
                 );
@@ -153,14 +164,14 @@ class Quote
         }
 
         if ($shipping_method_freight['cost'] <= 0) {
-            $shipping_method_freight['cost']                   += $postal_per_kg * ceil($this->total_weight);
+            $shipping_method_freight['cost']                   += $postal_per_kg * ceil($shipping_weight);
             $shipping_method_freight['debug']['calculations'][] = sprintf(
                 'No matching rate was found for %s kg. Switching to the defined per kg value...',
-                round($this->total_weight, 2),
+                round($shipping_weight, 2),
             );
             $shipping_method_freight['debug']['calculations'][] = sprintf(
                 'Total weight (%s kg) * per kg value (%s €) = %s €.',
-                ceil($this->total_weight),
+                ceil($shipping_weight),
                 round($postal_per_kg, 2),
                 round($shipping_method_freight['cost'], 2),
             );
@@ -262,7 +273,7 @@ class Quote
             $boxes_weight_text = [
                 sprintf(
                     '%s kg',
-                    round($this->total_weight, 2)
+                    round($this->getShippingWeight(), 2)
                 ),
             ];
         }
@@ -290,14 +301,14 @@ class Quote
 
     public function preceedsMinimumWeight(): bool
     {
-        global $order, $total_weight;
+        global $order;
 
         if (null === $order) {
             return true;
         }
 
         $shipping_weight_min     = constant(\grandeljayfreight::NAME . '_WEIGHT_MINIMUM');
-        $preceeds_minimum_weight = $total_weight < $shipping_weight_min;
+        $preceeds_minimum_weight = $this->getShippingWeight() < $shipping_weight_min;
 
         return $preceeds_minimum_weight;
     }
