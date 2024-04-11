@@ -13,7 +13,7 @@ namespace Grandeljay\Freight;
 class Pallet
 {
     private float $weight   = 0;
-    private array $products = array();
+    private array $products = [];
 
     public function getWeight(): float
     {

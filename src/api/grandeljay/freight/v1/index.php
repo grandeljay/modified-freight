@@ -17,9 +17,9 @@ if (rth_is_module_disabled('MODULE_SHIPPING_GRANDELJAYFREIGHT')) {
 }
 
 $_POST    = json_decode(file_get_contents('php://input'), true);
-$response = array(
+$response = [
     'success' => false,
-);
+];
 
 if ('POST' === $_SERVER['REQUEST_METHOD'] && isset($_POST['action'])) {
     switch ($_POST['action']) {

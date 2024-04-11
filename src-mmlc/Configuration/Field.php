@@ -42,7 +42,7 @@ class Field
     public static function initialiseFieldCountry(string $value, string $option): string
     {
         $value                      = html_entity_decode($value, ENT_QUOTES | ENT_HTML5);
-        $entries                    = json_decode($value, true) ?? array();
+        $entries                    = json_decode($value, true) ?? [];
         $option_without_module_name = substr(
             $option,
             strlen(\grandeljayfreight::NAME) + 1,
@@ -226,7 +226,7 @@ class Field
     public static function initialiseFieldSurcharges(string $value, string $option): string
     {
         $value                      = html_entity_decode($value, ENT_QUOTES | ENT_HTML5);
-        $entries                    = json_decode($value, true) ?? array();
+        $entries                    = json_decode($value, true) ?? [];
         $name                       = \grandeljayfreight::NAME;
         $option_without_module_name = substr(
             $option,

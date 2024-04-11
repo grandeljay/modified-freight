@@ -13,8 +13,8 @@ namespace Grandeljay\Freight;
 class Quote
 {
     private float $total_weight = 0;
-    private array $pallets      = array();
-    private array $methods      = array();
+    private array $pallets      = [];
+    private array $methods      = [];
 
     public function __construct(string $module)
     {
@@ -27,7 +27,7 @@ class Quote
         global $order;
 
         $products          = $order->products;
-        $pallets           = array();
+        $pallets           = [];
         $pallet_max_weight = (float) constant(\grandeljayfreight::NAME . '_WEIGHT_PER_PALLET');
 
         foreach ($products as $product) {
@@ -64,7 +64,7 @@ class Quote
 
     private function getShippingMethods(): array
     {
-        $methods        = array();
+        $methods        = [];
         $method_freight = $this->getShippingMethodFreight();
 
         if ($method_freight['cost'] > 0) {
@@ -78,7 +78,7 @@ class Quote
     {
         global $order;
 
-        $shipping_method_freight = array(
+        $shipping_method_freight = [
             'id'    => 'freight',
             'title' => sprintf(
                 '%s (%s)' . '<!-- BREAK -->',
@@ -86,10 +86,10 @@ class Quote
                 $this->getNameBoxWeight()
             ),
             'cost'  => 0,
-            'debug' => array(
-                'calculations' => array(),
-            ),
-        );
+            'debug' => [
+                'calculations' => [],
+            ],
+        ];
 
         $countries_query  = xtc_db_query(
             sprintf(
@@ -98,7 +98,7 @@ class Quote
                 TABLE_COUNTRIES
             )
         );
-        $country_delivery = array();
+        $country_delivery = [];
 
         while ($country = xtc_db_fetch_array($countries_query)) {
             if ($order->delivery['country']['iso_code_2'] === $country['countries_iso_code_2']) {
@@ -111,7 +111,7 @@ class Quote
 
         $country_configuration = json_decode(constant(\grandeljayfreight::NAME . '_COUNTRY_' . $country_delivery['countries_iso_code_2']), true);
 
-        $postal_rates  = array();
+        $postal_rates  = [];
         $postal_per_kg = 0;
 
         foreach ($country_configuration as $entry) {
@@ -232,7 +232,7 @@ class Quote
             }
         }
 
-        $pallets_weight = array();
+        $pallets_weight = [];
 
         foreach ($this->pallets as $pallet) {
             $key = $pallet->getWeight() . ' kg';
@@ -244,7 +244,7 @@ class Quote
             }
         }
 
-        $boxes_weight_text = array();
+        $boxes_weight_text = [];
 
         foreach ($pallets_weight as $weight_text => $quantity) {
             preg_match('/[\d+\.]+/', $weight_text, $weight_matches);
@@ -259,12 +259,12 @@ class Quote
         }
 
         if ('true' !== $debug_is_enabled || !$user_is_admin) {
-            $boxes_weight_text = array(
+            $boxes_weight_text = [
                 sprintf(
                     '%s kg',
                     round($this->total_weight, 2)
                 ),
-            );
+            ];
         }
 
         return implode(', ', $boxes_weight_text);
@@ -276,14 +276,14 @@ class Quote
             return null;
         }
 
-        $quote = array(
+        $quote = [
             'id'      => 'grandeljayfreight',
             'module'  => sprintf(
                 'Freight (%s)',
                 $this->getNameBoxWeight()
             ),
             'methods' => $this->methods,
-        );
+        ];
 
         return $quote;
     }

@@ -20,7 +20,7 @@ if (defined('TABLE_COUNTRIES') && defined('MODULE_SHIPPING_GRANDELJAYUPS_SHIPPIN
 /**
  * General
  */
-$translations_general = array(
+$translations_general = [
     /** Module */
     'TITLE'                           => 'grandeljay - Spedizione merci',
     'LONG_DESCRIPTION'                => 'Spedizione merci',
@@ -61,9 +61,9 @@ $translations_general = array(
     /** Bulk */
     'BULK_FACTOR_TITLE'               => 'Fattore',
     'BULK_FACTOR_DESC'                => 'In base a quale fattore dovrebbero essere adeguate tutte le tariffe per questo Paese?',
-);
+];
 
-$translations_groups = array(
+$translations_groups = [
     /** Weight */
     'WEIGHT_START_TITLE'                    => 'Peso',
     'WEIGHT_START_DESC'                     => '',
@@ -102,7 +102,7 @@ $translations_groups = array(
 
     'SURCHARGES_END_TITLE'                  => '',
     'SURCHARGES_END_DESC'                   => '',
-);
+];
 
 /**
  * Define

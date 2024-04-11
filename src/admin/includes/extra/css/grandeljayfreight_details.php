@@ -13,11 +13,11 @@ if (rth_is_module_disabled('MODULE_SHIPPING_GRANDELJAYFREIGHT')) {
 }
 
 /** Only enqueue Stylsheet when module settings are open */
-$grandeljayfreight_admin_screen = array(
+$grandeljayfreight_admin_screen = [
     'set'    => 'shipping',
     'module' => grandeljayfreight::class,
     'action' => 'edit',
-);
+];
 
 parse_str($_SERVER['QUERY_STRING'] ?? '', $query_string);
 
@@ -28,9 +28,9 @@ foreach ($grandeljayfreight_admin_screen as $key => $value) {
 }
 
 /** Enqueue Stylesheet */
-$files = array(
+$files = [
     grandeljayfreight::class . '_details',
-);
+];
 
 foreach ($files as $file) {
     $file_name    = '/' . DIR_ADMIN . 'includes/css/' . $file . '.css';
