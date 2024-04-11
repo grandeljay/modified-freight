@@ -12,8 +12,9 @@ namespace Grandeljay\Freight;
 
 class Quote
 {
-    private array $pallets = [];
-    private array $methods = [];
+    private array $calculations = [];
+    private array $pallets      = [];
+    private array $methods      = [];
 
     public function __construct(string $module)
     {
@@ -95,9 +96,6 @@ class Quote
                 $this->getNameBoxWeight()
             ),
             'cost'  => 0,
-            'debug' => [
-                'calculations' => [],
-            ],
         ];
 
         $shipping_weight = $this->getShippingWeight();
@@ -113,8 +111,15 @@ class Quote
 
         while ($country = xtc_db_fetch_array($countries_query)) {
             if ($order->delivery['country']['iso_code_2'] === $country['countries_iso_code_2']) {
-                $country_delivery                                   = $country;
-                $shipping_method_freight['debug']['calculations'][] = 'Calculating freight for ' . $country['countries_iso_code_2'] . '.';
+                $country_delivery = $country;
+
+                $this->calculations[] = [
+                    'item'  => sprintf(
+                        'Calculating freight for %s.',
+                        $country['countries_iso_code_2']
+                    ),
+                    'costs' => 0,
+                ];
 
                 break;
             }
@@ -133,14 +138,18 @@ class Quote
                    $order->delivery['postcode'] >= $postal_from
                 && $order->delivery['postcode'] <= $postal_to
             ) {
-                $postal_rates                                       = $entry['postal-rates'];
-                $shipping_method_freight['debug']['calculations'][] = sprintf(
-                    'Postal code %s is >= %s and <= %s.',
-                    $order->delivery['postcode'],
-                    $postal_from,
-                    $postal_to
-                );
-                $postal_per_kg                                      = is_numeric($entry['postal-per-kg']) ? $entry['postal-per-kg'] : 0;
+                $postal_rates  = $entry['postal-rates'];
+                $postal_per_kg = is_numeric($entry['postal-per-kg']) ? $entry['postal-per-kg'] : 0;
+
+                $this->calculations[] = [
+                    'item'  => sprintf(
+                        'Postal code %s is >= %s and <= %s.',
+                        $order->delivery['postcode'],
+                        $postal_from,
+                        $postal_to
+                    ),
+                    'costs' => 0,
+                ];
 
                 break;
             } else {
@@ -151,30 +160,38 @@ class Quote
         foreach ($postal_rates as $rate) {
             if ($rate['weight-max'] >= $shipping_weight) {
                 // Use this rate
-                $shipping_method_freight['cost']                   += $rate['weight-costs'];
-                $shipping_method_freight['debug']['calculations'][] = sprintf(
-                    'Total weight is %s kg which costs %s €. (%s € total).',
-                    round($shipping_weight, 2),
-                    round($rate['weight-costs'], 2),
-                    round($shipping_method_freight['cost'], 2)
-                );
+                $shipping_method_freight['cost'] += $rate['weight-costs'];
+
+                $this->calculations[] = [
+                    'item'  => sprintf(
+                        'Total weight is <code>%01.2f</code> kg.',
+                        $shipping_weight
+                    ),
+                    'costs' => $rate['weight-costs'],
+                ];
 
                 break;
             }
         }
 
         if ($shipping_method_freight['cost'] <= 0) {
-            $shipping_method_freight['cost']                   += $postal_per_kg * ceil($shipping_weight);
-            $shipping_method_freight['debug']['calculations'][] = sprintf(
-                'No matching rate was found for %s kg. Switching to the defined per kg value...',
-                round($shipping_weight, 2),
-            );
-            $shipping_method_freight['debug']['calculations'][] = sprintf(
-                'Total weight (%s kg) * per kg value (%s €) = %s €.',
-                ceil($shipping_weight),
-                round($postal_per_kg, 2),
-                round($shipping_method_freight['cost'], 2),
-            );
+            $shipping_method_freight['cost'] += $postal_per_kg * ceil($shipping_weight);
+
+            $this->calculations[] = [
+                'item'  => sprintf(
+                    'No matching rate was found for <code>%01.2f</code> kg. Switching to the defined per kg value...',
+                    $shipping_weight
+                ),
+                'costs' => 0,
+            ];
+            $this->calculations[] = [
+                'item'  => sprintf(
+                    'Total weight (<code>%01.2f</code> kg) * per kg value (<code>%01.2f</code> €)',
+                    ceil($shipping_weight),
+                    $postal_per_kg
+                ),
+                'costs' => $postal_per_kg * ceil($shipping_weight),
+            ];
         }
 
         if ($shipping_method_freight['cost'] <= 0) {
@@ -199,22 +216,28 @@ class Quote
 
             if ('true' === $surcharge['surcharge-per-pallet']) {
                 foreach ($this->pallets as $pallet) {
-                    $shipping_method_freight['cost']                   += $surcharge_amount;
-                    $shipping_method_freight['debug']['calculations'][] = sprintf(
-                        'Surcharge "%s" (%s €) is added per pallet (%s € total)',
-                        $surcharge['surcharge-name'],
-                        round($surcharge_amount, 2),
-                        round($shipping_method_freight['cost'], 2)
-                    );
+                    $shipping_method_freight['cost'] += $surcharge_amount;
+
+                    $this->calculations[] = [
+                        'item'  => sprintf(
+                            'Surcharge "%s" (<code>%01.2f</code> €) is added per pallet.',
+                            $surcharge['surcharge-name'],
+                            $surcharge_amount,
+                        ),
+                        'costs' => $surcharge_amount,
+                    ];
                 }
             } else {
-                $shipping_method_freight['cost']                   += $surcharge_amount;
-                $shipping_method_freight['debug']['calculations'][] = sprintf(
-                    'Surcharge "%s" (%s €) is added per order (%s € total)',
-                    $surcharge['surcharge-name'],
-                    round($surcharge_amount, 2),
-                    round($shipping_method_freight['cost'], 2)
-                );
+                $shipping_method_freight['cost'] += $surcharge_amount;
+
+                $this->calculations[] = [
+                    'item'  => sprintf(
+                        'Surcharge "%s" (<code>%01.2f</code> €) is added per order.',
+                        $surcharge['surcharge-name'],
+                        $surcharge_amount,
+                    ),
+                    'costs' => $surcharge_amount,
+                ];
             }
         }
         /** */
@@ -229,15 +252,39 @@ class Quote
 
         if ('true' === $debug_is_enabled && $user_is_admin) {
             foreach ($this->methods as &$method) {
+                $total = 0;
+
                 ob_start();
                 ?>
                 <br /><br />
 
                 <h3>Debug mode</h3>
+                <style type="text/css">
+                    table.calculations :is(th, td).number {
+                        text-align: right;
+                    }
+                </style>
+                <table class="calculations">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th class="number">Costs</th>
+                            <th class="number">Total</th>
+                        </tr>
+                    </thead>
 
-                <?php foreach ($method['debug']['calculations'] as $calculation) { ?>
-                    <p><?= $calculation ?></p>
-                <?php } ?>
+                    <tbody>
+                        <?php foreach ($this->calculations as $calculation) { ?>
+                            <?php $total += $calculation['costs']; ?>
+
+                            <tr>
+                                <td><?= $calculation['item'] ?></td>
+                                <td class="number"><code><?= sprintf('%01.2f', $calculation['costs']) ?></code></td>
+                                <td class="number"><code><?= sprintf('%01.2f', $total) ?></code></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
                 <?php
                 $method['title'] .= ob_get_clean();
             }
