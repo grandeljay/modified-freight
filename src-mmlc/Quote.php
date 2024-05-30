@@ -137,34 +137,12 @@ class Quote
             '203',
         ];
 
-        $postal_rates  = [];
-        $postal_per_kg = 0;
+        $postal_rates    = [];
+        $postal_per_kg   = 0;
+        $postal_delivery = \preg_replace('/[^\d]+/', '', $order->delivery['postcode'] ?? 0);
 
-        foreach ($country_configuration as $entry) {
-            $postal_from = preg_replace('/[^\d+]+/', '', $entry['postal-from'] ?? 0);
-            $postal_to   = preg_replace('/[^\d+]+/', '', $entry['postal-to']   ?? 0);
-
-            if (
-                   \is_numeric($postal_from)
-                && \is_numeric($postal_to)
-                && $order->delivery['postcode'] >= $postal_from
-                && $order->delivery['postcode'] <= $postal_to
-            ) {
-                $postal_rates  = $entry['postal-rates'];
-                $postal_per_kg = is_numeric($entry['postal-per-kg']) ? $entry['postal-per-kg'] : 0;
-
-                $this->calculations[] = [
-                    'item'  => sprintf(
-                        'Postal code %s is >= %s and <= %s.',
-                        $order->delivery['postcode'],
-                        $postal_from,
-                        $postal_to
-                    ),
-                    'costs' => 0,
-                ];
-
-                break;
-            } elseif (\in_array($order->delivery['country_id'], $country_ids_with_letter_postals, true)) {
+        if (\in_array($order->delivery['country_id'], $country_ids_with_letter_postals, true)) {
+            foreach ($country_configuration as $entry) {
                 $postals_from = \explode(',', $entry['postal-from'] ?? '');
 
                 foreach ($postals_from as $postal_area) {
@@ -188,10 +166,38 @@ class Quote
                         'costs' => 0,
                     ];
                 }
-            } else {
-                continue;
+            }
+        } else {
+            foreach ($country_configuration as $entry) {
+                $postal_from = preg_replace('/[^\d]+/', '', $entry['postal-from'] ?? 0);
+                $postal_to   = preg_replace('/[^\d]+/', '', $entry['postal-to']   ?? 0);
+
+                if (
+                       \is_numeric($postal_from)
+                    && \is_numeric($postal_to)
+                    && $postal_delivery >= $postal_from
+                    && $postal_delivery <= $postal_to
+                ) {
+                    $postal_rates  = $entry['postal-rates'];
+                    $postal_per_kg = is_numeric($entry['postal-per-kg']) ? $entry['postal-per-kg'] : 0;
+
+                    $this->calculations[] = [
+                        'item'  => sprintf(
+                            'Postal code %s is >= %s and <= %s.',
+                            $order->delivery['postcode'],
+                            $entry['postal-from'],
+                            $entry['postal-to']
+                        ),
+                        'costs' => 0,
+                    ];
+
+                    break;
+                } else {
+                    continue;
+                }
             }
         }
+
 
         foreach ($postal_rates as $rate) {
             if ($rate['weight-max'] >= $shipping_weight) {
