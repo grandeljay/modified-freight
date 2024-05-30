@@ -125,7 +125,17 @@ class Quote
             }
         }
 
-        $country_configuration = json_decode(constant(\grandeljayfreight::NAME . '_COUNTRY_' . $country_delivery['countries_iso_code_2']), true);
+        $country_configuration           = json_decode(constant(\grandeljayfreight::NAME . '_COUNTRY_' . $country_delivery['countries_iso_code_2']), true);
+        $country_ids_with_letter_postals = [
+            /** Ireland */
+            '103',
+            /** Malta */
+            '132',
+            /** Sweden */
+            '222',
+            /** United Kingdom */
+            '203',
+        ];
 
         $postal_rates  = [];
         $postal_per_kg = 0;
@@ -135,7 +145,9 @@ class Quote
             $postal_to   = preg_replace('/[^\d+]+/', '', $entry['postal-to']   ?? 0);
 
             if (
-                   $order->delivery['postcode'] >= $postal_from
+                   \is_numeric($postal_from)
+                && \is_numeric($postal_to)
+                && $order->delivery['postcode'] >= $postal_from
                 && $order->delivery['postcode'] <= $postal_to
             ) {
                 $postal_rates  = $entry['postal-rates'];
@@ -152,6 +164,30 @@ class Quote
                 ];
 
                 break;
+            } elseif (\in_array($order->delivery['country_id'], $country_ids_with_letter_postals, true)) {
+                $postals_from = \explode(',', $entry['postal-from'] ?? '');
+
+                foreach ($postals_from as $postal_area) {
+                    if (empty(\trim($postal_area))) {
+                        continue;
+                    }
+
+                    if (false === \str_starts_with($order->delivery['postcode'], $postal_area)) {
+                        continue;
+                    }
+
+                    $postal_rates  = $entry['postal-rates'];
+                    $postal_per_kg = is_numeric($entry['postal-per-kg']) ? $entry['postal-per-kg'] : 0;
+
+                    $this->calculations[] = [
+                        'item'  => sprintf(
+                            'Postal code %s has been matched with "%s".',
+                            $order->delivery['postcode'],
+                            $postal_area
+                        ),
+                        'costs' => 0,
+                    ];
+                }
             } else {
                 continue;
             }
