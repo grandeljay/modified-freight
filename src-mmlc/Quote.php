@@ -13,63 +13,25 @@ namespace Grandeljay\Freight;
 class Quote
 {
     private array $calculations = [];
-    private array $pallets      = [];
     private array $methods      = [];
+    private array $pallets      = [];
+    private float $weight;
+    private string $weight_formatted;
 
     public function __construct(string $module)
     {
-        $this->pallets = $this->getPallets();
-        $this->methods = $this->getShippingMethods();
-    }
-
-    private function getShippingWeight(): float
-    {
-        $shipping_weight = 0;
-
-        foreach ($this->pallets as $pallet) {
-            $shipping_weight += $pallet->getWeight();
-        }
-
-        return $shipping_weight;
-    }
-
-    private function getPallets(): array
-    {
-        global $order;
-
-        $products          = $order->products;
-        $pallets           = [];
         $pallet_max_weight = (float) constant(\grandeljayfreight::NAME . '_WEIGHT_PER_PALLET');
 
-        foreach ($products as $product) {
-            for ($i = 1; $i <= $product['quantity']; $i++) {
-                $product_weight = (float) $product['weight'];
+        $order_packer = new \Grandeljay\ShippingModuleHelper\OrderPacker();
+        $order_packer->setIdealWeight($pallet_max_weight);
+        $order_packer->setMaximumWeight($pallet_max_weight);
+        $order_packer->packOrder();
 
-                /** Find a pallet empty enough to fit product */
-                foreach ($pallets as &$pallet) {
-                    $pallet_weight          = $pallet->getWeight();
-                    $pallet_can_fit_product = $pallet_weight + $product_weight < $pallet_max_weight;
+        $this->pallets          = $order_packer->getBoxes();
+        $this->weight           = $order_packer->getWeight();
+        $this->weight_formatted = $order_packer->getWeightFormatted();
 
-                    if ($pallet_can_fit_product) {
-                        $pallet->addProduct($product);
-
-                        continue 2;
-                    }
-                }
-
-                /** Break the reference binding so $pallet can be assigned a new value */
-                unset($pallet);
-
-                /** Add product to a new box */
-                $pallet = new Pallet();
-                $pallet->addProduct($product);
-
-                /** Add box to list */
-                $pallets[] = $pallet;
-            }
-        }
-
-        return $pallets;
+        $this->methods = $this->getShippingMethods();
     }
 
     private function getShippingMethods(): array
@@ -98,7 +60,7 @@ class Quote
             'cost'  => 0,
         ];
 
-        $shipping_weight = $this->getShippingWeight();
+        $shipping_weight = $this->weight;
 
         $countries_query  = xtc_db_query(
             sprintf(
@@ -332,42 +294,7 @@ class Quote
             }
         }
 
-        $pallets_weight = [];
-
-        foreach ($this->pallets as $pallet) {
-            $key = $pallet->getWeight() . ' kg';
-
-            if (isset($pallets_weight[$key])) {
-                $pallets_weight[$key]++;
-            } else {
-                $pallets_weight[$key] = 1;
-            }
-        }
-
-        $boxes_weight_text = [];
-
-        foreach ($pallets_weight as $weight_text => $quantity) {
-            preg_match('/[\d+\.]+/', $weight_text, $weight_matches);
-
-            $weight = round($weight_matches[0], 2) . ' kg';
-
-            $boxes_weight_text[] = sprintf(
-                '%dx %s',
-                $quantity,
-                $weight
-            );
-        }
-
-        if ('true' !== $debug_is_enabled || !$user_is_admin) {
-            $boxes_weight_text = [
-                sprintf(
-                    '%s kg',
-                    round($this->getShippingWeight(), 2)
-                ),
-            ];
-        }
-
-        return implode(', ', $boxes_weight_text);
+        return $this->weight_formatted;
     }
 
     public function getQuote(): ?array
@@ -397,7 +324,7 @@ class Quote
         }
 
         $shipping_weight_min     = constant(\grandeljayfreight::NAME . '_WEIGHT_MINIMUM');
-        $preceeds_minimum_weight = $this->getShippingWeight() < $shipping_weight_min;
+        $preceeds_minimum_weight = $this->weight < $shipping_weight_min;
 
         return $preceeds_minimum_weight;
     }
