@@ -23,7 +23,7 @@ class grandeljayfreight extends StdModule
     private array $countries;
 
     public const NAME    = 'MODULE_SHIPPING_GRANDELJAYFREIGHT';
-    public const VERSION = '0.5.0';
+    public const VERSION = '0.5.1';
 
     /**
      * Used by modified to determine the cheapest shipping method. Should
