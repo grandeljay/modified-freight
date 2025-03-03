@@ -108,10 +108,10 @@ class Field
                                                                                 <template class="row">
                                                                                     <tr>
                                                                                         <td>
-                                                                                            <input type="number" data-name="weight-max" />
+                                                                                            <input type="number" data-name="weight-max" step="any" />
                                                                                         </td>
                                                                                         <td>
-                                                                                            <input type="number" data-name="weight-costs" />
+                                                                                            <input type="number" data-name="weight-costs" step="any" />
                                                                                         </td>
                                                                                         <td>
                                                                                             <button type="button" class="remove">
@@ -268,7 +268,7 @@ class Field
                                                     <input type="text" data-name="surcharge-name" />
                                                 </td>
                                                 <td>
-                                                    <input type="number" data-name="surcharge-amount" />
+                                                    <input type="number" data-name="surcharge-amount" step="any" />
                                                 </td>
                                                 <td>
                                                     <select data-name="surcharge-type">
